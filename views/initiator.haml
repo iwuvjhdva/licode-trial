@@ -1,1 +1,12 @@
 %h1 Initiator
+
+.alert.alert-danger#js-status-container{:role => 'alert', :style => 'display: none;'}
+
+.panel.panel-default
+  .panel-heading Participants
+  .panel-body
+    .btn-group#js-participants-container{:'data-toggle' => 'buttons'}
+
+.panel.panel-default
+  .panel-heading Videos
+  .panel-body#js-videos-container
