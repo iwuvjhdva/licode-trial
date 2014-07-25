@@ -14,15 +14,17 @@ $(function () {
 
     $.post('/_tokens', {user: participantID}, onTokenCreated, 'json');
 
-    var room;
-
     function onTokenCreated(data) {
         console.log("Got token", data.token);
-        room = Erizo.Room(data);
+        var room = Erizo.Room(data);
 
         localStream.addEventListener('access-accepted', function () {
             room.connect();
             localStream.show('js-local-video', {speaker: false});
+        });
+
+        room.addEventListener("room-connected", function (roomEvent) {
+            room.publish(localStream, {maxVideoBW: 450});
         });
     }
 

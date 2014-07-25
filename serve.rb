@@ -8,7 +8,7 @@ require 'sinatra/content_for'
 require './config'
 require './nuve'
 
-set :haml, :attr_wrapper => '"'
+set :haml, :format => :html5, :attr_wrapper => '"'
 set :public_folder, 'public'
 
 # Initializing Nuve API
@@ -29,6 +29,7 @@ get '/' do
 end
 
 get '/initiator' do
+    @token = nuve.createToken(room['_id'], 'initiator', 'initiator')
     haml :initiator
 end
 
@@ -39,6 +40,6 @@ end
 post '/_tokens' do
     content_type :json
     status 201
-    token = nuve.createToken(room['_id'], params[:user], '')
+    token = nuve.createToken(room['_id'], params[:user], 'participant')
     { :token => token }.to_json
 end

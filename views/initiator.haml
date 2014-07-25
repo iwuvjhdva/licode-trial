@@ -1,3 +1,6 @@
+%script{:src => "/js/erizo.js"}
+%script{:src => "/js/initiator.js"}
+
 %h1 Initiator
 
 .alert.alert-danger#js-status-container{:role => 'alert', :style => 'display: none;'}
@@ -10,3 +13,5 @@
 .panel.panel-default
   .panel-heading Videos
   .panel-body#js-videos-container
+
+.hide#js-nuve-data{:'data-token' => @token} 
