@@ -1,12 +1,13 @@
 /*jshint indent:4, strict:true*/
 
+var room;
+
 $(function () {
     "use strict";
 
     var nuveData = $('#js-nuve-data').data();
-    var room = Erizo.Room({token: nuveData.token});
 
-    room.connect();
+    room = Erizo.Room({token: nuveData.token});
 
     room.addEventListener('room-connected', function (roomEvent) {
         subscribeToStreams(roomEvent.streams);
@@ -22,7 +23,7 @@ $(function () {
 
         $('#js-videos-container').append(video);
 
-        streamEvent.stream.show(videoID);
+        streamEvent.stream.show(videoID, {speaker: false});
     });
 
     room.addEventListener('stream-added', function (streamEvent) {
@@ -35,8 +36,10 @@ $(function () {
         }
     });
 
+    room.connect();
+
     function subscribeToStreams(streams) {
-        for (index in streams)
+        for (var index in streams)
             room.subscribe(streams[index]);
     };
 });

@@ -37,6 +37,10 @@ get '/participant' do
     haml :participant
 end
 
+get '/example' do
+    haml :example
+end
+
 post '/_tokens' do
     content_type :json
     status 201
