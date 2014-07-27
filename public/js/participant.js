@@ -9,6 +9,7 @@ $(function () {
         audio: false,
         video: true,
         data: true,
+        attributes: {participantID: participantID},
         videoSize: [640, 480, 640, 480]
     });
 
