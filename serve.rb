@@ -1,3 +1,4 @@
+require 'pry'
 require 'sinatra'
 require 'json'
 require 'haml'
@@ -7,6 +8,8 @@ require 'sinatra/content_for'
 require './config'
 require './nuve'
 
+
+set :bind, '0.0.0.0'
 set :haml, :format => :html5, :attr_wrapper => '"'
 set :public_folder, 'public'
 
@@ -15,12 +18,13 @@ nuve = Nuve.new $config[:service], $config[:key], $config[:url]
 
 # Getting a room
 rooms_json = nuve.getRooms()
+
 rooms = JSON.parse(rooms_json)
-if rooms.empty?
+room = rooms.find { |item| item['name'] == $config[:new_room_name] }
+
+if room.nil?
     room_json = nuve.createRoom($config[:new_room_name])
     room = JSON.parse(room_json)
-else
-    room = rooms[0]
 end
 
 get '/' do
