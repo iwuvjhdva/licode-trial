@@ -1,11 +1,13 @@
 /*jshint indent:4, strict:true*/
 
+var room, localStream;
+
 $(function () {
     "use strict";
 
     var participantID = prompt("Please enter your participant ID", 'virtual-group');
 
-    var localStream = Erizo.Stream({
+    localStream = Erizo.Stream({
         audio: false,
         video: true,
         data: true,
@@ -17,7 +19,7 @@ $(function () {
 
     function onTokenCreated(data) {
         console.log("Got token", data.token);
-        var room = Erizo.Room(data);
+        room = Erizo.Room(data);
 
         localStream.addEventListener('access-accepted', function () {
             room.connect();
