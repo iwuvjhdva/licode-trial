@@ -1,13 +1,13 @@
 /*jshint indent:4, strict:true*/
 
-var room, localStream;
+var room, broadcastingStream;
 
 $(function () {
     "use strict";
 
     var participantID = prompt("Please enter your participant ID", 'virtual-group');
 
-    localStream = Erizo.Stream({
+    broadcastingStream = Erizo.Stream({
         audio: false,
         video: true,
         data: true,
@@ -19,17 +19,24 @@ $(function () {
 
     function onTokenCreated(data) {
         console.log("Got token", data.token);
+
         room = Erizo.Room(data);
 
-        localStream.addEventListener('access-accepted', function () {
+        broadcastingStream.addEventListener('access-accepted', function () {
             room.connect();
+
+            var localStream = Erizo.Stream({
+                stream: broadcastingStream.stream.clone(),
+                video: true,
+            });
+
             localStream.show('js-local-video', {speaker: false});
         });
 
         room.addEventListener("room-connected", function (roomEvent) {
-            room.publish(localStream, {maxVideoBW: 450});
+            room.publish(broadcastingStream, {maxVideoBW: 450});
         });
     }
 
-    localStream.init();
+    broadcastingStream.init();
 });
