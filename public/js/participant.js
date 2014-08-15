@@ -1,6 +1,6 @@
 /*jshint indent:4, strict:true*/
 
-var room, broadcastingStream;
+var room, broadcastingStream, videoTrack;
 
 $(function () {
     "use strict";
@@ -34,8 +34,28 @@ $(function () {
         });
 
         room.addEventListener("room-connected", function (roomEvent) {
+            videoTrack = broadcastingStream.stream.getVideoTracks()[0];
+            videoTrack.enabled = false;
             room.publish(broadcastingStream, {maxVideoBW: 450});
+            subscribeInitiatorStream(roomEvent.streams);
         });
+
+        room.addEventListener('stream-added', function (streamEvent) {
+            subscribeInitiatorStream([streamEvent.stream]);
+        });
+
+        function subscribeInitiatorStream(streams) {
+            for (var index in streams)
+                if (streams[index].getAttributes().initiator) {
+                    room.subscribe(streams[index]);
+
+                    streams[index].addEventListener('stream-data', function (e) {
+                        console.log("Got message: ", e.msg);
+                        if (e.msg.participantID == participantID)
+                            videoTrack.enabled = (e.msg.action == 'unhold');
+                    });
+                }
+        }
     }
 
     broadcastingStream.init();
