@@ -10,8 +10,8 @@ $(function () {
     broadcastingStream = Erizo.Stream({
         audio: false,
         video: true,
-        data: true,
-        attributes: {participantID: participantID},
+        data: false,
+        attributes: {participantID: participantID, role: 'participant'},
         videoSize: [640, 480, 640, 480]
     });
 
@@ -46,13 +46,14 @@ $(function () {
 
         function subscribeInitiatorStream(streams) {
             for (var index in streams)
-                if (streams[index].getAttributes().initiator) {
-                    room.subscribe(streams[index]);
+                var stream = streams[index];
+                if (stream.getAttributes().role == 'initiator') {
+                    room.subscribe(stream);
 
-                    streams[index].addEventListener('stream-data', function (e) {
+                    stream.addEventListener('stream-data', function (e) {
                         console.log("Got message: ", e.msg);
                         if (e.msg.participantID == participantID)
-                            videoTrack.enabled = (e.msg.action == 'unhold');
+                        videoTrack.enabled = (e.msg.action == 'unhold');
                     });
                 }
         }

@@ -9,15 +9,14 @@ $(function () {
 
     var dataStream = Erizo.Stream({
         data: true,
-        attributes: {initiator: true}
+        attributes: {role: 'initiator'},
     });
     room = Erizo.Room({token: nuveData.token});
 
     room.addEventListener('room-connected', function (roomEvent) {
-        room.publish(dataStream);
         for (var index in roomEvent.streams)
-            if (!roomEvent.streams[index].getAttributes().initiator);
-                addParticipant(roomEvent.streams[index]);
+            addParticipant(roomEvent.streams[index]);
+        room.publish(dataStream);
     });
 
     room.addEventListener('stream-subscribed', function(streamEvent) {
@@ -27,21 +26,26 @@ $(function () {
     });
 
     room.addEventListener('stream-added', function (streamEvent) {
-        if (!streamEvent.stream.getAttributes().initiator);
-            addParticipant(streamEvent.stream);
+        addParticipant(streamEvent.stream);
     });
 
     room.addEventListener('stream-removed', function (streamEvent) {
-        var participantID = streamEvent.stream.getAttributes().participantID;
-        getObjectByUserID('js-participant', participantID).remove();
-        hideParticipantVideo(participantID);
+        var attrs = streamEvent.stream.getAttributes();
+        if (attrs.role == 'participant') {
+            getObjectByUserID('js-participant', attrs.participantID).remove();
+            hideParticipantVideo(attrs.participantID);
+        }
     });
 
     dataStream.init();
     room.connect();
 
     function addParticipant(stream) {
-        var participantID = stream.getAttributes().participantID;
+        var attrs = stream.getAttributes();
+
+        if (attrs.role != 'participant') return;
+
+        var participantID = attrs.participantID;
 
         var attrs = {
             type: 'button',
@@ -54,9 +58,9 @@ $(function () {
         $('#js-participants-container').append(participant);
 
         participant.click(function () {
-            if ($(this).hasClass('active')) {
+            if ($(this).hasClass('active'))
                 hideParticipantVideo(participantID);
-            } else
+            else
                 showParticipantVideo(participantID);
         });
 
